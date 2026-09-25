@@ -1,256 +1,146 @@
 # Rootful vs Rootless vs RootHide
 
-A clear, side-by-side comparison of the three jailbreak filesystem layouts used on modern iOS, and which jailbreak is the best pick for each one.
+A simple guide for beginners: what these three words mean, how they are different, and which jailbreak you should use.
 
-> Information is current as of **September 2026**. Always double-check the official source of a jailbreak before using it on your device.
-
----
-
-## Table of Contents
-
-- [TL;DR](#tldr)
-- [What Does "Root" Mean Here?](#what-does-root-mean-here)
-- [Rootful](#rootful)
-- [Rootless](#rootless)
-- [RootHide](#roothide)
-- [Full Comparison Table](#full-comparison-table)
-- [Tweak Compatibility](#tweak-compatibility)
-- [Best Jailbreaks](#best-jailbreaks)
-- [Which One Should I Use?](#which-one-should-i-use)
-- [Glossary](#glossary)
-- [Disclaimer](#disclaimer)
+> Up to date as of **September 2026**.
 
 ---
 
-## TL;DR
+## The Short Version
 
-| | **Rootful** | **Rootless** | **RootHide** |
+When you jailbreak your iPhone, the jailbreak has to put its files somewhere. The only real difference between **rootful**, **rootless** and **RootHide** is **where those files go**.
+
+| | Rootful | Rootless | RootHide |
 |---|---|---|---|
-| Where jailbreak files live | Directly in `/` (system partition) | `/var/jb` | A random hidden folder, no `/var/jb` |
-| Touches the system partition | Yes | No | No |
-| Detection resistance | Poor | Medium | Best |
-| Tweak availability | Legacy (iOS ≤ 14) tweaks | Largest modern library | Most rootless tweaks via auto-conversion |
-| Best jailbreak | palera1n (rootful mode) | Dopamine | Relaxin |
+| Where the files go | Inside the iPhone's system | In a separate folder | In a secret folder with a random name |
+| Safe for your system | ⚠️ Less safe | ✅ Safe | ✅ Safe |
+| Hidden from banking apps and games | ❌ No | ⚠️ Sometimes | ✅ Yes, mostly |
+| Number of tweaks | Old tweaks only | ✅ The most | Most rootless tweaks work too |
+| Best jailbreak | palera1n | Dopamine | Relaxin |
 
 ---
 
-## What Does "Root" Mean Here?
+## An Easy Way to Picture It
 
-"Root" in these names does **not** mean root *user* privileges. Every one of these jailbreaks gives you root access.
+Think of your iPhone as a **house**.
 
-It refers to **where on the filesystem the jailbreak installs its files** (package manager, tweaks, `apt`, `bash`, libraries, and so on):
-
-- **Rootful**: into the real root filesystem `/`
-- **Rootless**: into a separate directory, `/var/jb`
-- **RootHide**: into a randomized, hidden directory that apps cannot easily find
-
-This change was forced by Apple. Starting with iOS 15, the system partition is a **Signed System Volume (SSV)**: it is cryptographically sealed, so writing to it breaks the seal and the device will not boot normally. Jailbreak developers had to move everything out of `/`.
+- 🏠 **Rootful** puts your jailbreak stuff **all over the house**: in the kitchen, the living room, everywhere. It is easy to use, but anyone who walks in can see it, and you might damage something.
+- 📦 **Rootless** puts all your stuff **in one box in the garage**. The house stays clean, but everyone knows where the box is (`/var/jb`), so apps can still check for it.
+- 🕵️ **RootHide** puts your stuff **in a hidden room with a secret door**, and the door is in a different place on every phone. Apps walking through the house do not find anything.
 
 ---
 
 ## Rootful
 
-The classic way to jailbreak, used from the very first jailbreaks up to iOS 14.
+The **old** way to jailbreak. It was used until iOS 14.
 
-### How it works
+- The jailbreak writes its files straight into the iPhone's system.
+- Since iOS 15, Apple locks the system, so rootful only works on older iPhones (iPhone 6s to iPhone X) and needs extra storage.
+- Apps can detect it very easily.
 
-The jailbreak remounts the system partition as read-write and installs files directly into paths like `/usr/lib`, `/Library/MobileSubstrate`, and `/Applications`. On iOS 15 and later this is only possible through a **fakefs**: a writable copy of the system partition created on the data partition.
-
-### Pros
-
-- Full compatibility with the huge back catalogue of older tweaks (Cydia era)
-- Tweaks and tools find files in their standard, expected locations
-- Complete control over the whole filesystem
-
-### Cons
-
-- Modifies the system partition, so it carries more risk of a broken install
-- On iOS 15+ it needs a fakefs, which uses several GB of storage
-- Very easy to detect: banking apps and games just check for `/Applications/Cydia.app` or `/usr/lib/libsubstrate.dylib`
-- Essentially only viable on checkm8 devices (A8–A11) for iOS 15+
-
-### Example paths
-
-```
-/Library/MobileSubstrate/DynamicLibraries/
-/usr/bin/apt
-/Applications/Sileo.app
-```
+**Good for:** old iPhones and old tweaks.
+**Not good for:** most people today.
 
 ---
 
 ## Rootless
 
-The modern standard since iOS 15, and what almost every current jailbreak and tweak targets.
+The **normal, modern** way to jailbreak, used since iOS 15.
 
-### How it works
+- The system is not touched at all. Everything goes into one folder called `/var/jb`.
+- Safer, and easy to remove.
+- Almost every new tweak is made for rootless.
+- Some apps can still notice it, because they know the folder `/var/jb`.
 
-Nothing is written to the system partition. All jailbreak files go into a directory that is symlinked to `/var/jb`. Tweaks and packages are built for the `iphoneos-arm64` package architecture and load their files from `/var/jb/...`.
-
-### Pros
-
-- The system partition stays untouched and sealed
-- Safer and easier to remove: deleting the jailbreak directory basically cleans it up
-- No fakefs, so no extra storage cost
-- The largest actively maintained tweak library today
-- Supported by every major package manager (Sileo, Zebra) and by Theos
-
-### Cons
-
-- Old rootful tweaks must be updated or converted to work
-- `/var/jb` is a fixed, well known path, so detection is simple: an app only needs to check whether `/var/jb` exists
-
-### Example paths
-
-```
-/var/jb/Library/MobileSubstrate/DynamicLibraries/
-/var/jb/usr/bin/apt
-/var/jb/Applications/Sileo.app
-```
+**Good for:** most people. The most tweaks and the most stable setup.
 
 ---
 
 ## RootHide
 
-A newer approach, built on top of rootless ideas, designed mainly to **hide the jailbreak from apps**.
+The **hidden** way to jailbreak.
 
-### How it works
+- Works like rootless, but the jailbreak folder gets a **random name** and is hidden.
+- Banking apps, games and work apps usually cannot tell that your phone is jailbroken, often **without any extra bypass tweak**.
+- Most rootless tweaks work too. Some need to be converted first with the built-in **RootHide Patcher** (just a few taps).
 
-Just like rootless, the system partition is not touched. The difference is that the jailbreak root lives in a directory with a **random name** that changes per install, and there is **no `/var/jb` symlink**. Tweaks do not use hardcoded paths. Instead they call a `jbroot()` API to resolve the real location at runtime. Apps you have not explicitly chosen to inject simply cannot see the jailbreak.
+**Good for:** people who want to use banking apps or games that block jailbroken phones.
 
-Packages use the `iphoneos-arm64e` architecture. Most rootless tweaks can be converted automatically on-device with the **RootHide Patcher**.
+---
 
-### Pros
+## Will My Tweak Work?
 
-- Best jailbreak detection resistance of the three by design
-- Banking apps, games, and work apps often run without any extra bypass tweak
-- System partition stays untouched
-- Randomized path means there is no fixed file for apps to look for
-- Per-app control over which apps get tweaks injected
+| Tweak made for... | On Rootful | On Rootless | On RootHide |
+|---|---|---|---|
+| Rootful | ✅ | ❌ | ❌ |
+| Rootless | ❌ | ✅ | ✅ Usually, after the RootHide Patcher |
+| RootHide | ❌ | ❌ | ✅ |
 
-### Cons
+---
 
-- Smaller native tweak library than rootless
-- Some tweaks need the RootHide Patcher, and a few do not convert cleanly
-- Tweak developers have to use `jbroot()` for full native support
+## The Best Jailbreaks
 
-### Example paths
+### 🏆 Rootful: palera1n
+
+- **iPhones:** iPhone 6s to iPhone X (A8–A11 chips)
+- **iOS:** 15.0 and newer
+- **Note:** you need a computer every time you restart your phone
+
+For very old phones on iOS 14 or lower: **checkra1n**, **unc0ver** or **Taurine**.
+
+### 🏆 Rootless: Dopamine
+
+- **iOS:** 15.0 to 17.3.1 on most iPhones, and up to 18.7.1 on iPhone 6s to iPhone 11
+- **Note:** no computer needed. After a restart, just open the app and tap jailbreak again
+- The best and most stable jailbreak right now
+
+Alternative: **palera1n** (rootless mode) for iPhone 6s to iPhone X on newer iOS.
+
+### 🏆 RootHide: Relaxin ⭐ My Favourite
+
+- **iOS:** 16.5.1 to 17.3.1
+- **Note:** no computer needed. After a restart, just open the app again
+- Open source, very clean and easy to use, and your jailbreak stays hidden with almost no setup
+
+In my opinion, Relaxin is the best RootHide jailbreak there is.
+
+Other RootHide options:
+- **Dopamine-RootHide** for iOS 15 and 16
+- **RootHide Bootstrap** for iOS 15.0 to 17.0 (needs TrollStore)
+- **palera1n-roothide** for iPhone 6s to iPhone X
+
+---
+
+## Which One Should I Pick?
 
 ```
-/var/containers/Bundle/Application/.jbroot-XXXXXXXXXXXXXXXX/usr/bin/apt
-jbroot("/usr/bin/apt")
-```
-
----
-
-## Full Comparison Table
-
-| Feature | Rootful | Rootless | RootHide |
-|---|---|---|---|
-| Jailbreak root | `/` | `/var/jb` | Random hidden directory |
-| Modifies system partition | Yes | No | No |
-| Needs fakefs on iOS 15+ | Yes | No | No |
-| Extra storage required | High (fakefs) | Low | Low |
-| Main iOS range | iOS ≤ 14, iOS 15+ on A8–A11 only | iOS 15+ | iOS 15+ |
-| Package architecture | `iphoneos-arm` | `iphoneos-arm64` | `iphoneos-arm64e` |
-| Legacy tweak support | Native | Needs update | Needs update or patcher |
-| Modern tweak support | Poor | Best | Good (via patcher) |
-| Jailbreak detection resistance | Poor | Medium | Excellent |
-| Needs bypass tweaks for banking apps | Almost always | Often | Rarely |
-| Risk of breaking the system | Higher | Low | Low |
-| Ease of full removal | Harder (restore rootfs) | Easy | Easy |
-| Package managers | Cydia, Sileo, Zebra | Sileo, Zebra | Sileo, Zebra (RootHide builds) |
-| Tweak injection | Substrate / Substitute / ElleKit | ElleKit | ElleKit |
-
----
-
-## Tweak Compatibility
-
-| Tweak built for → | Rootful jailbreak | Rootless jailbreak | RootHide jailbreak |
-|---|---|---|---|
-| **Rootful** | ✅ | ❌ | ❌ |
-| **Rootless** | ❌ | ✅ | ⚠️ Usually works after RootHide Patcher |
-| **RootHide** | ❌ | ❌ | ✅ |
-
-Tips:
-
-- On rootless or RootHide, only install packages that list `iphoneos-arm64` or `iphoneos-arm64e`.
-- Never force-install a rootful (`iphoneos-arm`) package on a rootless or RootHide setup.
-
----
-
-## Best Jailbreaks
-
-### Rootful
-
-| Jailbreak | Supported | Type | Why |
-|---|---|---|---|
-| **palera1n** (rootful / fakefs mode) ⭐ | A8–A11, iOS 15.0 and newer | Semi-tethered (needs a computer) | The only realistic rootful option on modern iOS. Uses the unpatchable checkm8 bootrom exploit |
-| **checkra1n** | A7–A11, iOS 12.0–14.8.1 | Semi-tethered | The legendary rootful jailbreak for older firmware |
-| **unc0ver** | iOS 11.0–14.8 | Semi-untethered | The most widely used rootful jailbreak of its era |
-| **Taurine** | iOS 14.0–14.8.1 | Semi-untethered | Clean, stable rootful option for iOS 14 |
-
-**Pick:** palera1n in rootful mode on iOS 15+, checkra1n or unc0ver/Taurine if you are still on iOS 14 or lower.
-
-### Rootless
-
-| Jailbreak | Supported | Type | Why |
-|---|---|---|---|
-| **Dopamine** ⭐ | iOS 15.0–17.3.1 (arm64e), iOS 15.0–18.7.1 (A8–A13 / arm64), 26.0–26.0.1 (A12/A13) | Semi-untethered, no computer needed | The best and most polished jailbreak today. Very stable, widest device range, actively maintained (latest: 3.0.10) |
-| **palera1n** (rootless mode) | A8–A11, iOS 15.0 and newer | Semi-tethered | Supports the newest firmware on checkm8 devices |
-
-**Pick:** Dopamine. Use palera1n only if your A8–A11 device is on a firmware Dopamine does not cover.
-
-### RootHide
-
-| Jailbreak | Supported | Type | Why |
-|---|---|---|---|
-| **Relaxin** ⭐ | iOS 16.5.1–17.3.1 | Semi-untethered, no computer needed | My personal favourite. Modern, open source, built together with the RootHide developer, and full RootHide hiding out of the box |
-| **Dopamine-RootHide** | iOS 15.0–16.x | Semi-untethered | The RootHide fork of Dopamine for iOS 15 and 16 |
-| **RootHide Bootstrap** | iOS 15.0–17.0, A8–A17 Pro & M1/M2 | Semi-jailbreak via TrollStore | No kernel exploit needed. Great if you already have TrollStore |
-| **palera1n-roothide** | A8–A11, iOS 15.0 and newer | Semi-tethered | RootHide on checkm8 devices |
-
-**Pick:** Relaxin. In my opinion it is the best RootHide jailbreak available: clean, reliable, and it keeps your device hidden from detection with almost no extra setup.
-
----
-
-## Which One Should I Use?
-
-```
-Do you need apps that block jailbroken devices (banking, games, work)?
+Do you want to use banking apps or games that block jailbroken phones?
 │
-├── Yes ──► RootHide  (Relaxin, Dopamine-RootHide, Bootstrap)
+├── Yes ──► RootHide  →  Relaxin
 │
-└── No
-    │
-    ├── Want the most tweaks and the most stable setup? ──► Rootless (Dopamine)
-    │
-    └── Need old iOS ≤ 14 tweaks on an A8–A11 device? ──► Rootful (palera1n rootful)
+└── No  ──► Rootless  →  Dopamine
 ```
 
-Summary:
-
-- **Most people:** Rootless with Dopamine
-- **Privacy / apps that detect jailbreaks:** RootHide with Relaxin
-- **Legacy tweaks or old devices only:** Rootful with palera1n
+Rootful is only worth it for older iPhones or old tweaks.
 
 ---
 
-## Glossary
+## Small Dictionary
 
-| Term | Meaning |
+| Word | What it means |
 |---|---|
-| **SSV** | Signed System Volume. Apple's sealed, read-only system partition since iOS 15 |
-| **fakefs** | A writable copy of the system partition used by rootful jailbreaks on iOS 15+ |
-| **checkm8** | An unpatchable bootrom exploit for A5–A11 chips |
-| **Semi-untethered** | After a reboot you re-run the jailbreak app on the device, no computer needed |
-| **Semi-tethered** | After a reboot you need a computer to re-jailbreak |
-| **ElleKit** | Modern tweak injection library used by rootless and RootHide jailbreaks |
-| **TrollStore** | A tool that permanently installs apps with custom entitlements, used by some semi-jailbreaks |
-| **`jbroot()`** | RootHide API that converts a normal path into the real, randomized jailbreak path |
+| **Tweak** | A small add-on that changes how your iPhone looks or works |
+| **Semi-untethered** | After restarting, you open the jailbreak app on your phone again. No computer needed |
+| **Semi-tethered** | After restarting, you need a computer to jailbreak again |
+| **Sileo / Zebra** | App stores for tweaks |
+| **TrollStore** | A tool that lets you install special apps permanently |
 
 ---
 
-## Disclaimer
+## Before You Start
 
-Jailbreaking can void your warranty and may cause data loss or instability. Only download jailbreaks from their **official** sources, and always make a backup first. This repository is for educational purposes only.
+- ✅ Make a **backup** of your iPhone first.
+- ✅ Only download jailbreaks from their **official** websites or GitHub pages.
+- ⚠️ Jailbreaking can void your warranty and may cause problems. You do it at your own risk.
+
+This guide is for learning purposes only.
